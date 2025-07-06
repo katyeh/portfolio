@@ -64,7 +64,7 @@ export function Footer({ darkMode }: FooterProps) {
             </a>
           </div>
           <p className={`${darkMode ? 'text-gray-400' : 'text-[#5A5F6A]'}`}>
-            © {currentYear} Kathleen Yeh. All rights reserved.
+            Built with ❤️ by Kathleen Yeh
           </p>
         </div>
       </div>

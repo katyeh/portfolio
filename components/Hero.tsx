@@ -360,7 +360,10 @@ export function Hero({ darkMode }: HeroProps) {
                     darkMode={darkMode}
                     prefersReducedMotion={prefersReducedMotion}
                   />
-                  <p className="text-lg text-[#5A5F6A] dark:text-gray-300 font-normal">
+                  <p
+                    className="text-lg font-normal"
+                    style={{ color: darkMode ? '#d1d5db' : '#000000' }}
+                  >
                     Full Stack Software Engineer at DroneDeploy
                   </p>
                 </div>
@@ -372,7 +375,10 @@ export function Hero({ darkMode }: HeroProps) {
                     darkMode={darkMode}
                     prefersReducedMotion={prefersReducedMotion}
                   />
-                  <p className="text-lg text-[#5A5F6A] dark:text-gray-300 font-normal">
+                  <p
+                    className="text-lg font-normal"
+                    style={{ color: darkMode ? '#d1d5db' : '#000000' }}
+                  >
                     I blend product sense from my marketing background with deep
                     technical skills
                   </p>
@@ -385,7 +391,10 @@ export function Hero({ darkMode }: HeroProps) {
                     darkMode={darkMode}
                     prefersReducedMotion={prefersReducedMotion}
                   />
-                  <p className="text-lg text-[#5A5F6A] dark:text-gray-300 font-normal">
+                  <p
+                    className="text-lg font-normal"
+                    style={{ color: darkMode ? '#d1d5db' : '#000000' }}
+                  >
                     Passionate about building high-impact web products
                   </p>
                 </div>
