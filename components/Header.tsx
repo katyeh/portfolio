@@ -34,6 +34,13 @@ export function Header({ darkMode, setDarkMode }: HeaderProps) {
           <ul className="flex items-center space-x-6">
             <li>
               <AnimatedUnderline
+                href="#about"
+                label="About"
+                darkMode={darkMode}
+              />
+            </li>
+            <li>
+              <AnimatedUnderline
                 href="#journey"
                 label="Journey"
                 darkMode={darkMode}

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
+import { About } from '@/components/About';
 import { Timeline } from '@/components/Timeline';
 import { Skills } from '@/components/Skills';
 import { Projects } from '@/components/Projects';
@@ -71,6 +72,7 @@ export default function HomePage() {
       <Header darkMode={darkMode} setDarkMode={setDarkMode} />
       <main className="w-full">
         <Hero darkMode={darkMode} />
+        <About darkMode={darkMode} />
         <Timeline darkMode={darkMode} />
         <Skills darkMode={darkMode} />
         <Projects darkMode={darkMode} />

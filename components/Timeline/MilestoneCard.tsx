@@ -64,6 +64,41 @@ export function MilestoneCard({
     transition: 'all 0.3s ease',
   };
 
+  // Handle post-it note hover with tilt effect
+  const handleNoteHover = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
+    entering: boolean
+  ) => {
+    // Check for reduced motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const note = e.currentTarget;
+    const randomTilt = entering ? Math.random() * 6 - 3 : 0;
+    const shadow = entering
+      ? '0 6px 12px rgba(0, 0, 0, 0.1)'
+      : '0 2px 4px rgba(0, 0, 0, 0.1)';
+
+    // Calculate base position and apply tilt
+    if (isMobile) {
+      const lift = entering ? 'translateY(-4px)' : 'translateY(0px)';
+      note.style.transform = `${lift} rotate(${randomTilt}deg)`;
+    } else {
+      const baseY = POST_IT.STAGGER_POSITIONS[index] || 0;
+      const liftY = entering ? baseY - 4 : baseY;
+      note.style.transform = `translateY(${liftY}px) rotate(${randomTilt}deg)`;
+    }
+
+    note.style.boxShadow = shadow;
+    note.style.zIndex = entering ? '10' : '1';
+
+    // Call the original interaction handler
+    if (entering) {
+      onInteractionStart(e);
+    } else {
+      onInteractionEnd(e);
+    }
+  };
+
   return (
     <div
       id={`milestone-${milestone.id}`}
@@ -75,10 +110,10 @@ export function MilestoneCard({
           : `flex-shrink-0 ${POST_IT.WIDTHS.DESKTOP}`
       } ${isActive ? 'active-milestone' : ''}`}
       style={cardStyles}
-      onMouseEnter={!isMobile ? onInteractionStart : undefined}
-      onMouseLeave={!isMobile ? onInteractionEnd : undefined}
-      onTouchStart={isMobile ? onInteractionStart : undefined}
-      onTouchEnd={isMobile ? onInteractionEnd : undefined}
+      onMouseEnter={!isMobile ? (e) => handleNoteHover(e, true) : undefined}
+      onMouseLeave={!isMobile ? (e) => handleNoteHover(e, false) : undefined}
+      onTouchStart={isMobile ? (e) => handleNoteHover(e, true) : undefined}
+      onTouchEnd={isMobile ? (e) => handleNoteHover(e, false) : undefined}
       data-milestone-id={milestone.id}
     >
       {/* Year Badge */}
