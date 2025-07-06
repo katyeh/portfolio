@@ -17,13 +17,27 @@ interface JourneyMilestone {
 export function Timeline({ darkMode }: TimelineProps) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
+  const mobilePathRef = useRef<SVGPathElement>(null);
   const beeRef = useRef<HTMLDivElement>(null);
   const [activeMilestone, setActiveMilestone] = useState<string | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [currentBeePosition, setCurrentBeePosition] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const animationFrameRef = useRef<number | null>(null);
   const currentBeePositionRef = useRef(0);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -85,20 +99,33 @@ export function Timeline({ darkMode }: TimelineProps) {
 
   // Animate bee along the curved path to specific milestone
   const animateBeeToMilestone = (milestoneIndex: number) => {
-    if (!pathRef.current || !beeRef.current || prefersReducedMotion) return;
+    if (prefersReducedMotion) return;
 
-    const path = pathRef.current;
+    const currentPath = isMobile ? mobilePathRef.current : pathRef.current;
+    if (!currentPath || !beeRef.current) return;
+
+    const path = currentPath;
     const bee = beeRef.current;
     const pathLength = path.getTotalLength();
 
     // Calculate target position along path for this milestone (0 to 1)
     let targetProgress = milestoneIndex / (journeyMilestones.length - 1);
 
-    // Adjust positions to keep bee visible in front of post-it notes
-    if (milestoneIndex === 0) {
-      targetProgress = targetProgress + 0.05; // Move a bit forward from start
-    } else if (milestoneIndex === 2) {
-      targetProgress = targetProgress - 0.08; // Stop a bit earlier
+    // Adjust positions based on screen size
+    if (isMobile) {
+      // For mobile vertical layout, distribute evenly with slight adjustments
+      if (milestoneIndex === 0) {
+        targetProgress = 0.05; // Start slightly after beginning
+      } else if (milestoneIndex === journeyMilestones.length - 1) {
+        targetProgress = 0.95; // End slightly before end
+      }
+    } else {
+      // Desktop horizontal layout adjustments
+      if (milestoneIndex === 0) {
+        targetProgress = targetProgress + 0.05; // Move a bit forward from start
+      } else if (milestoneIndex === 2) {
+        targetProgress = targetProgress - 0.08; // Stop a bit earlier
+      }
     }
 
     const targetDistance = targetProgress * pathLength;
@@ -187,9 +214,9 @@ export function Timeline({ darkMode }: TimelineProps) {
     setCurrentBeePosition(0);
   };
 
-  // Handle post-it note hover
+  // Handle post-it note hover/interaction
   const handleNoteHover = (
-    e: React.MouseEvent<HTMLDivElement>,
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
     entering: boolean
   ) => {
     if (prefersReducedMotion) return;
@@ -197,7 +224,9 @@ export function Timeline({ darkMode }: TimelineProps) {
     const note = e.currentTarget;
     const milestoneId = note.getAttribute('data-milestone-id');
     const index = journeyMilestones.findIndex((m) => m.id === milestoneId);
-    const baseStagger = [0, 120, 30, 80][index] || 0;
+
+    // Different stagger values for mobile vs desktop
+    const baseStagger = isMobile ? 0 : [0, 120, 30, 80][index] || 0;
 
     const randomTilt = entering ? Math.random() * 6 - 3 : 0;
     const shadow = entering
@@ -205,7 +234,10 @@ export function Timeline({ darkMode }: TimelineProps) {
       : '0 2px 4px rgba(0, 0, 0, 0.1)';
     const lift = entering ? baseStagger - 4 : baseStagger;
 
-    note.style.transform = `translateY(${lift}px) rotate(${randomTilt}deg)`;
+    // Only apply tilt and lift effects on desktop
+    if (!isMobile) {
+      note.style.transform = `translateY(${lift}px) rotate(${randomTilt}deg)`;
+    }
     note.style.boxShadow = shadow;
     note.style.zIndex = entering ? '10' : '1';
 
@@ -276,15 +308,15 @@ export function Timeline({ darkMode }: TimelineProps) {
   return (
     <section
       id="journey"
-      className="section-container w-full py-24 md:py-32 overflow-hidden"
+      className="section-container w-full py-16 md:py-24 lg:py-32 overflow-hidden"
     >
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 md:px-6">
         <div
           ref={timelineRef}
           className="opacity-0 translate-y-10 transition-all duration-1000 ease-out"
         >
           <h2
-            className="text-3xl md:text-4xl font-semibold mb-16 text-center"
+            className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-12 md:mb-16 text-center"
             style={{
               color: darkMode ? '#FFFFFF' : '#1A1A1A',
             }}
@@ -294,25 +326,29 @@ export function Timeline({ darkMode }: TimelineProps) {
 
           {/* Journey Timeline Container */}
           <div
-            className="relative max-w-[1200px] mx-auto"
+            className={`relative mx-auto ${
+              isMobile ? 'max-w-sm' : 'max-w-[1200px]'
+            }`}
             onMouseLeave={() => {
-              setActiveMilestone(null);
-              hideBee();
+              if (!isMobile) {
+                setActiveMilestone(null);
+                hideBee();
+              }
             }}
           >
-            {/* SVG for bee flight path - UPDATED coordinates */}
+            {/* SVG for bee flight path */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
               <svg
                 width="100%"
                 height="100%"
-                viewBox="0 0 1200 400"
+                viewBox={isMobile ? '0 0 400 1200' : '0 0 1200 400'}
                 preserveAspectRatio="none"
                 className="absolute top-0 left-0 w-full h-full"
                 style={{
                   overflow: 'visible',
                 }}
               >
-                {/* Updated curved path connecting to each staggered milestone */}
+                {/* Desktop horizontal path */}
                 <path
                   ref={pathRef}
                   d="M120,20 C200,20 220,50 300,140 C380,230 420,90 600,50 C780,10 820,70 900,100 C980,130 1020,110 1080,100 C1120,90 1140,80 1180,70"
@@ -321,7 +357,30 @@ export function Timeline({ darkMode }: TimelineProps) {
                   strokeWidth="2"
                   strokeDasharray="5 8"
                   strokeLinecap="round"
-                  className={`${prefersReducedMotion ? '' : 'path-animation'}`}
+                  className={`${prefersReducedMotion ? '' : 'path-animation'} ${
+                    isMobile ? 'hidden' : 'block'
+                  }`}
+                  style={{
+                    strokeDasharray: '5 8',
+                    strokeDashoffset: prefersReducedMotion ? '0' : '2000',
+                    animation: prefersReducedMotion
+                      ? 'none'
+                      : 'dash 2s ease-out forwards',
+                  }}
+                />
+
+                {/* Mobile vertical path */}
+                <path
+                  ref={mobilePathRef}
+                  d="M200,50 C200,100 180,150 200,200 C220,250 180,300 200,350 C220,400 180,450 200,500 C220,550 180,600 200,650 C220,700 180,750 200,800 C220,850 180,900 200,950 C220,1000 200,1050 200,1100"
+                  fill="none"
+                  stroke={colors.cobalt}
+                  strokeWidth="2"
+                  strokeDasharray="5 8"
+                  strokeLinecap="round"
+                  className={`${prefersReducedMotion ? '' : 'path-animation'} ${
+                    isMobile ? 'block' : 'hidden'
+                  }`}
                   style={{
                     strokeDasharray: '5 8',
                     strokeDashoffset: prefersReducedMotion ? '0' : '2000',
@@ -332,7 +391,7 @@ export function Timeline({ darkMode }: TimelineProps) {
                 />
               </svg>
 
-              {/* Animated Bee - MOVED outside SVG */}
+              {/* Animated Bee */}
               <div
                 ref={beeRef}
                 className="absolute bee"
@@ -428,27 +487,41 @@ export function Timeline({ darkMode }: TimelineProps) {
               </div>
             </div>
 
-            {/* Post-it Notes Container - UPDATED positioning */}
-            <div className="relative flex justify-between gap-2 md:gap-4 z-10 pt-16 pb-8 overflow-x-auto">
+            {/* Post-it Notes Container - Responsive Layout */}
+            <div
+              className={`relative z-10 pt-8 md:pt-16 pb-8 ${
+                isMobile
+                  ? 'flex flex-col gap-8'
+                  : 'flex justify-between gap-2 md:gap-4 overflow-x-auto'
+              }`}
+            >
               {journeyMilestones.map((milestone, index) => (
                 <div
                   key={milestone.id}
                   id={`milestone-${milestone.id}`}
-                  className={`relative transition-all duration-300 ease-out p-4 md:p-6 rounded-lg milestone-card flex-shrink-0 w-[240px] md:w-[260px] ${
+                  className={`relative transition-all duration-300 ease-out p-4 md:p-6 rounded-lg milestone-card ${
+                    isMobile
+                      ? 'w-full max-w-sm mx-auto'
+                      : 'flex-shrink-0 w-[240px] md:w-[260px]'
+                  } ${
                     activeMilestone === milestone.id ? 'active-milestone' : ''
                   }`}
                   style={{
                     backgroundColor:
                       colors.postItColors[index % colors.postItColors.length],
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                    transform: `translateY(${[0, 120, 30, 80][index] || 0}px)`,
+                    transform: isMobile
+                      ? 'none'
+                      : `translateY(${[0, 120, 30, 80][index] || 0}px)`,
                     zIndex: 1,
                   }}
-                  onMouseEnter={(e) => handleNoteHover(e, true)}
-                  onMouseLeave={(e) => handleNoteHover(e, false)}
+                  onMouseEnter={(e) => !isMobile && handleNoteHover(e, true)}
+                  onMouseLeave={(e) => !isMobile && handleNoteHover(e, false)}
+                  onTouchStart={(e) => isMobile && handleNoteHover(e, true)}
+                  onTouchEnd={(e) => isMobile && handleNoteHover(e, false)}
                   data-milestone-id={milestone.id}
                 >
-                  {/* Year Badge - Updated styling */}
+                  {/* Year Badge */}
                   <div
                     className="inline-block px-3 py-1.5 rounded-full text-xs font-medium mb-4"
                     style={{
@@ -459,9 +532,9 @@ export function Timeline({ darkMode }: TimelineProps) {
                     {milestone.year}
                   </div>
 
-                  {/* Title - Updated font size and weight */}
+                  {/* Title */}
                   <h3
-                    className="text-xl font-bold mb-2 leading-tight"
+                    className="text-lg md:text-xl font-bold mb-2 leading-tight"
                     style={{
                       color: colors.textDark,
                     }}
@@ -469,7 +542,7 @@ export function Timeline({ darkMode }: TimelineProps) {
                     {milestone.title}
                   </h3>
 
-                  {/* Subtitle - Updated styling */}
+                  {/* Subtitle */}
                   <p
                     className="text-sm font-medium mb-3"
                     style={{
@@ -479,9 +552,9 @@ export function Timeline({ darkMode }: TimelineProps) {
                     {milestone.subtitle}
                   </p>
 
-                  {/* Description - Updated styling */}
+                  {/* Description */}
                   <p
-                    className="text-base leading-relaxed"
+                    className="text-sm md:text-base leading-relaxed"
                     style={{
                       color: colors.text,
                     }}
@@ -489,17 +562,22 @@ export function Timeline({ darkMode }: TimelineProps) {
                     {milestone.description}
                   </p>
 
-                  {/* Bee landing spot - keeping existing implementation */}
+                  {/* Bee landing spot */}
                   <div
-                    className="absolute -top-3 -right-3 w-6 h-6 rounded-full flex items-center justify-center"
+                    className={`absolute w-6 h-6 rounded-full flex items-center justify-center ${
+                      isMobile
+                        ? '-top-3 left-1/2 transform -translate-x-1/2'
+                        : '-top-3 -right-3'
+                    }`}
                     style={{
                       backgroundColor: 'white',
                       border: `2px solid ${colors.mint}`,
                       opacity: activeMilestone === milestone.id ? 1 : 0.6,
-                      transform:
+                      transform: `${isMobile ? 'translateX(-50%)' : ''} ${
                         activeMilestone === milestone.id
                           ? 'scale(1.2)'
-                          : 'scale(1)',
+                          : 'scale(1)'
+                      }`,
                       transition: 'all 0.3s ease',
                     }}
                   >
@@ -515,10 +593,10 @@ export function Timeline({ darkMode }: TimelineProps) {
             </div>
           </div>
 
-          {/* Accessibility note - keeping existing implementation */}
-          <div className="mt-16 text-center text-sm opacity-60">
+          {/* Accessibility note */}
+          <div className="mt-12 md:mt-16 text-center text-xs md:text-sm opacity-60">
             <p>
-              Hover over each milestone to interact •{' '}
+              {isMobile ? 'Tap' : 'Hover over'} each milestone to interact •{' '}
               {prefersReducedMotion
                 ? 'Animations reduced per your system preferences'
                 : 'Watch the bee fly!'}
@@ -538,10 +616,17 @@ export function Timeline({ darkMode }: TimelineProps) {
           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
           z-index: 10 !important;
         }
+
         @media (prefers-reduced-motion: reduce) {
           .active-milestone {
             transform: none !important;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .milestone-card {
+            transform: none !important;
           }
         }
       `}</style>

@@ -219,7 +219,6 @@ export function Hero({ darkMode }: HeroProps) {
             <svg
               ref={helloRef}
               width="100%"
-              height="auto"
               viewBox="0 0 600 120"
               className="max-w-4xl mx-auto"
             >

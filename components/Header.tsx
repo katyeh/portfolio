@@ -12,7 +12,7 @@ interface HeaderProps {
 export function Header({ darkMode, setDarkMode }: HeaderProps) {
   return (
     <header
-      className="sticky top-0 z-10 w-full backdrop-blur-md bg-opacity-70 transition-colors duration-300"
+      className="sticky top-0 z-50 w-full backdrop-blur-md bg-opacity-70 transition-colors duration-300"
       style={{
         backgroundColor: darkMode
           ? 'rgba(18, 18, 18, 0.8)'
