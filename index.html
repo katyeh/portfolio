@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta property="og:title" content="Kat Yeh" />
+<meta property="og:description" content="Software engineer building at the intersection of AI, product, and systems." />
+<meta property="og:url" content="https://katyeh.github.io" />
+<title>Kat Yeh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: #f3ede2;
+    color: #15140f;
+    font-family: "Newsreader", Georgia, serif;
+    font-feature-settings: "ss01" 1;
+  }
+
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 6px; }
+  *::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+
+  /* Shell */
+  .site {
+    padding: 64px 80px 128px;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  /* Topbar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(21,20,15,0.14);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: #6e6757;
+    text-transform: uppercase;
+  }
+  .topbar-brand {
+    font-family: "Inter Tight", sans-serif;
+    font-weight: 600;
+    color: #15140f;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: end;
+    padding: 120px 0 78px;
+    border-bottom: 1px solid rgba(21,20,15,0.14);
+  }
+  .hero h1 {
+    font-family: "Inter Tight", sans-serif;
+    font-size: 96px;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    font-weight: 500;
+    margin: 0;
+  }
+  .hero h1 em {
+    color: oklch(55% 0.12 50);
+    font-style: italic;
+    font-family: "Newsreader", serif;
+    font-weight: 400;
+  }
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-bottom: 12px;
+  }
+  .portrait {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(0.08);
+  }
+  .hero-right p {
+    font-size: 19px;
+    line-height: 1.55;
+    color: #15140f;
+    text-wrap: pretty;
+    margin: 0;
+  }
+
+  /* TOC */
+  .toc {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px;
+    padding: 40px 0;
+    border-bottom: 1px solid rgba(21,20,15,0.14);
+  }
+  .toc-mono {
+    padding: 14px 0;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    color: #6e6757;
+    letter-spacing: 0.06em;
+  }
+  .toc-title {
+    padding: 14px 0;
+    color: #15140f;
+    font-family: "Newsreader", serif;
+    font-size: 18px;
+  }
+  .toc-page {
+    padding: 14px 0;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    color: #6e6757;
+    letter-spacing: 0.06em;
+    text-align: right;
+  }
+
+  /* Section header */
+  .section-head {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 24px;
+    align-items: baseline;
+    padding-top: 80px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(21,20,15,0.14);
+    margin-bottom: 32px;
+  }
+  .section-num {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    color: #6e6757;
+    letter-spacing: 0.08em;
+  }
+  .section-title {
+    font-family: "Inter Tight", sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Body text */
+  .body-grid {
+    display: grid;
+    grid-template-columns: 60px minmax(0, 720px);
+    gap: 24px;
+  }
+  .pull {
+    font-family: "Inter Tight", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #6e6757;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .body-text {
+    font-size: 20px;
+    line-height: 1.6;
+    color: #15140f;
+    margin: 0 0 1.2em;
+    text-wrap: pretty;
+  }
+  .body-text:last-child { margin-bottom: 0; }
+
+  /* Project grid */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: rgba(21,20,15,0.18);
+    border: 1px solid rgba(21,20,15,0.18);
+  }
+  .proj-card {
+    background: #f3ede2;
+    padding: 32px 28px;
+    cursor: default;
+    transition: background .25s ease;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    color: inherit;
+  }
+  .proj-card:hover { background: #ebe4d6; }
+  .proj-head {
+    display: flex;
+    justify-content: space-between;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: #6e6757;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 28px;
+  }
+  .proj-title {
+    font-family: "Inter Tight", sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+    transition: color .2s;
+    color: #15140f;
+  }
+  .proj-card:hover .proj-title { color: oklch(55% 0.12 50); }
+  .proj-desc {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    color: #15140f;
+    text-wrap: pretty;
+  }
+
+  /* Contact */
+  .contact-list {
+    display: grid;
+    grid-template-columns: 60px 200px 1fr 1fr;
+  }
+  .contact-cell {
+    padding: 22px 0;
+    border-top: 1px solid rgba(21,20,15,0.14);
+    font-size: 18px;
+  }
+  .contact-cell-mono {
+    padding: 22px 0;
+    border-top: 1px solid rgba(21,20,15,0.14);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: #6e6757;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .contact-cell-label {
+    padding: 22px 0;
+    border-top: 1px solid rgba(21,20,15,0.14);
+    font-family: "Inter Tight", sans-serif;
+    font-size: 13px;
+    color: #6e6757;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .contact-cell.last,
+  .contact-cell-mono.last,
+  .contact-cell-label.last {
+    border-bottom: 1px solid rgba(21,20,15,0.14);
+  }
+  .contact-cell-mono.align-right { text-align: right; }
+
+  /* Copy button */
+  .copy-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #15140f;
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: left;
+    transition: color .2s;
+  }
+  .copy-btn:hover, .copy-btn.copied { color: oklch(55% 0.12 50); }
+
+  /* Links */
+  a.ext-link {
+    color: #15140f;
+    text-decoration: none;
+    transition: color .2s;
+  }
+  a.ext-link:hover { color: oklch(55% 0.12 50); }
+
+  /* Footer */
+  .footer {
+    padding-top: 80px;
+    margin-top: 80px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: #6e6757;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(21,20,15,0.14);
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-80 {
+    transition-delay: 80ms;
+  }
+
+  @media (max-width: 900px) {
+    .site { padding: 40px 24px 80px; }
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 80px 0 56px; }
+    .hero h1 { font-size: 60px; }
+    .contact-list { grid-template-columns: 48px 1fr; }
+    .contact-cell-mono.align-right, .contact-cell-label:nth-child(4n), .contact-cell:nth-child(4n), .contact-cell-mono:nth-child(4n) { display: none; }
+    .body-grid { grid-template-columns: 1fr; }
+    .body-grid > span:first-child { display: none; }
+    .section-head { grid-template-columns: 48px 1fr; }
+    .toc { grid-template-columns: 48px 1fr; }
+    .toc-page { display: none; }
+    .proj-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="site">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <span class="topbar-brand">Kat Yeh</span>
+    <span>Index · v2026.1</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="reveal">
+    <div class="hero">
+      <h1>Building at<br>the <em>intersection</em><br>of AI, product,<br>and systems.</h1>
+      <div class="hero-right">
+        <img src="assets/portrait.png" alt="Kat Yeh" class="portrait" />
+        <p>I work across marketing, business, engineering, and AI. I'm interested in how new tools move from early experiments into real workflows people actually use.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="reveal reveal-delay-80">
+    <div class="toc">
+      <span class="toc-mono">01</span>
+      <span class="toc-title">About</span>
+      <span class="toc-page">p. 01</span>
+
+      <span class="toc-mono">02</span>
+      <span class="toc-title">Contact</span>
+      <span class="toc-page">p. 02</span>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="reveal">
+    <div class="section-head">
+      <span class="section-num">§ 01</span>
+      <h2 class="section-title">About</h2>
+    </div>
+    <div class="body-grid">
+      <span></span>
+      <div>
+        <div class="pull">The short version</div>
+        <p class="body-text">I'm a software engineer currently building GTM AI tools and workflows. My background is a mix of marketing, business, and engineering, which gives me a practical lens on software: I care not only about how systems are built, but whether they solve real problems, change behavior, and create leverage.</p>
+        <p class="body-text">I'm a first-generation Asian American and the daughter of immigrants. I grew up with parents who taught me to work hard, be resourceful, and take opportunities seriously. That has shaped how I move through my career, and made me interested in how people build momentum without always having a clear roadmap.</p>
+        <p class="body-text">Lately I've been interested in how AI can help people turn messy, repeated work into reliable, repeatable workflows.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Work -->
+  <!--
+  <div class="reveal">
+    <div class="section-head">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">Selected Work</h2>
+    </div>
+    <div class="proj-grid">
+      <div class="proj-card">
+        <div class="proj-head">
+          <span>01</span><span>GTM · AI</span><span>2026</span>
+        </div>
+        <div>
+          <h3 class="proj-title">Pipeline Composer</h3>
+          <p class="proj-desc">An AI workspace that drafts, scores, and routes outbound sequences from raw account context.</p>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <span>02</span><span>Revenue · Triage</span><span>2025</span>
+        </div>
+        <div>
+          <h3 class="proj-title">Signal Inbox</h3>
+          <p class="proj-desc">A triage tool that turns scattered intent signals into a single ranked feed for revenue teams.</p>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <span>03</span><span>Marketing · Tools</span><span>2025</span>
+        </div>
+        <div>
+          <h3 class="proj-title">Brief.exe</h3>
+          <p class="proj-desc">A drafting interface where marketers iterate on positioning with an opinionated assistant.</p>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-head">
+          <span>04</span><span>Internal · Knowledge</span><span>2024</span>
+        </div>
+        <div>
+          <h3 class="proj-title">Atlas Notes</h3>
+          <p class="proj-desc">An internal knowledge layer that surfaces the right document at the right moment.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  -->
+
+  <!-- Contact -->
+  <div class="reveal">
+    <div class="section-head">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">Contact</h2>
+    </div>
+    <div class="contact-list">
+      <span class="contact-cell-mono">01</span>
+      <span class="contact-cell-label">Email · preferred</span>
+      <span class="contact-cell">
+        <button class="copy-btn" id="copy-email" aria-label="Copy email address">kathleenyeh1@gmail.com</button>
+      </span>
+      <span class="contact-cell-mono align-right">click to copy</span>
+
+      <span class="contact-cell-mono">02</span>
+      <span class="contact-cell-label">GitHub</span>
+      <span class="contact-cell">
+        <a class="ext-link" href="https://github.com/katyeh" target="_blank" rel="noreferrer">github.com/katyeh</a>
+      </span>
+      <span class="contact-cell-mono align-right">CODE / PROJECTS</span>
+
+      <span class="contact-cell-mono last">03</span>
+      <span class="contact-cell-label last">LinkedIn</span>
+      <span class="contact-cell last">
+        <a class="ext-link" href="https://linkedin.com/in/katyeh" target="_blank" rel="noreferrer">linkedin.com/in/katyeh</a>
+      </span>
+      <span class="contact-cell-mono align-right last">CONNECT</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>© 2026 Kat Yeh</span>
+    <span></span>
+  </div>
+
+</div>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+  reveals.forEach((el) => io.observe(el));
+
+  // Copy email
+  const copyBtn = document.getElementById('copy-email');
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('kathleenyeh1@gmail.com');
+      copyBtn.textContent = 'copied ✓';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = 'kathleenyeh1@gmail.com';
+        copyBtn.classList.remove('copied');
+      }, 1800);
+    } catch (e) {}
+  });
+</script>
+</body>
+</html>
